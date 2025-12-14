@@ -1,4 +1,3 @@
 name = "team-memories"
 compatibility_date = "2025-12-14"
-assets = { directory = "." }
 pages_build_output_dir = "."
