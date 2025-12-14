@@ -1,14 +1,322 @@
- /* 让容器随页面宽度变化，并保持 4:3 比例 */
-        .canvas-wrapper {
-            position: relative;
-            width: 100%;
-            max-width: 1000px;          /* 你想给 canvas 的最大宽度 */
-            aspect-ratio: 1000 / 600;   /* 自动算高度 */
-            border: 2px solid #000;    /* 这里就是“可随布局改变的边框” */
-            margin: 0 auto;            /* 水平居中（可选） */
-        }
-        #viewport {
-            display: block;            /* 去掉底部空隙 */
-            width: 100%;
-            height: 100%;
-        }
+:root {
+    /* Colors - Modern Gradient Scheme */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+    --surface-color: rgba(255, 255, 255, 0.1);
+    --text-primary: #ffffff;
+    --accent-color: #00f2fe;
+
+    /* Animation - Cubic Bezier */
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+    --anim-duration-short: 0.3s;
+    --anim-duration-medium: 0.5s;
+    --anim-duration-long: 1.5s;
+
+    /* Layout */
+    --safe-area-padding: max(20px, env(safe-area-inset-bottom));
+    --border-radius-lg: 30px;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-primary: #f0f0f0;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* 让容器随页面宽度变化，并保持 4:3 比例 (实际上是 1000:600 = 5:3) */
+.canvas-wrapper {
+    position: relative;
+    /* Optimize layout to take 80-90% of screen */
+    width: 90vw; 
+    height: 90vh;
+    /* Use min to ensure aspect ratio fits within the 90% box without overflow */
+    width: min(90vw, 90vh * (1000 / 600));
+    height: min(90vh, 90vw * (600 / 1000));
+    
+    aspect-ratio: 1000 / 600;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    margin: 0 auto; /* Centered by flex body or margin auto */
+    overflow: hidden;
+    background: #000;
+    transition: width 0.3s var(--ease-standard), height 0.3s var(--ease-standard);
+}
+
+/* Ensure body centers the content */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: #1a1a1a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: var(--text-primary);
+    overflow: hidden; /* Hide scrollbars */
+}
+
+#viewport {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* ... existing styles ... */
+
+/* Controls - Micro-interactions */
+.controls {
+    position: absolute;
+    bottom: var(--safe-area-padding);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 1003;
+}
+
+/* Update Controls to be larger/responsive */
+.control-btn {
+    /* ... previous styles ... */
+    padding: 1.2rem 2.5rem; /* Larger touch targets */
+    font-size: 1.1rem;
+}
+
+.close-btn {
+    /* ... */
+    width: 60px; /* Larger close button */
+    height: 60px;
+    font-size: 32px;
+}
+
+
+/* Flash Overlay for Transition */
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #fff;
+    z-index: 2000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1.5s var(--ease-out);
+    mix-blend-mode: overlay;
+}
+
+.flash-overlay.active {
+    opacity: 1;
+    transition: none;
+}
+
+/* Slideshow Overlay - Modernized */
+.slideshow-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #050505; /* Deep dark background */
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transition: opacity 1s var(--ease-standard);
+    perspective: 1000px; /* Enable 3D space */
+}
+
+.slideshow-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* Particle Canvas Layer */
+#particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000; /* Behind slides (which are in container), but above background */
+    pointer-events: none;
+}
+
+/* Slides Container - 3D & Parallax */
+.slides-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    z-index: 1001;
+    transform-style: preserve-3d;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    /* Advanced transition with cubic-bezier */
+    transition: opacity 1.5s var(--ease-standard), transform 6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: scale(1.0) translateZ(0);
+    will-change: transform, opacity;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: scale(1.05) translateZ(20px); /* 3D depth effect */
+}
+
+/* Vintage Grain Effect - Optimized */
+.grain-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1002;
+    opacity: 0.12;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+}
+
+/* Color Grading (Modern Cinematic) */
+.slideshow-overlay::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    /* Complex gradient for cinematic look */
+    background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.6) 90%),
+                linear-gradient(to bottom, rgba(0,0,0,0.2) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.4) 100%);
+    pointer-events: none;
+    z-index: 1002;
+    mix-blend-mode: multiply;
+}
+
+/* Update Controls to be larger/responsive */
+.control-btn {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-primary);
+    padding: 1.2rem 2.5rem; /* Larger touch targets */
+    cursor: pointer;
+    border-radius: var(--border-radius-lg);
+    font-family: inherit;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-size: 1.1rem;
+    transition: all 0.2s var(--ease-standard);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    outline: none;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Button Focus Glow */
+.control-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.5);
+    border-color: var(--accent-color);
+}
+
+/* Button Hover & Active */
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+}
+
+.control-btn:active {
+    transform: translateY(0) scale(0.98); /* Press feedback */
+    background: rgba(255, 255, 255, 0.15);
+}
+
+/* Close Button */
+.close-btn {
+    position: absolute;
+    top: var(--safe-area-padding);
+    right: 20px;
+    z-index: 1003;
+    background: rgba(0,0,0,0.2);
+    width: 60px; /* Larger close button */
+    height: 60px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    font-size: 32px;
+    cursor: pointer;
+    transition: all 0.3s var(--ease-standard);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.close-btn:hover {
+    background: rgba(255,0,0,0.3);
+    transform: rotate(90deg);
+}
+
+/* Loading Spinner - Modern */
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--accent-color);
+    animation: spin 1s var(--ease-standard) infinite;
+    z-index: 999;
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+    .control-btn {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
+    
+    .canvas-wrapper {
+        border-width: 1px;
+    }
+}
+
+@media (max-width: 480px) {
+    .controls {
+        width: 90%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+    
+    .control-btn {
+        flex: 1;
+        text-align: center;
+        padding: 12px 0;
+    }
+}

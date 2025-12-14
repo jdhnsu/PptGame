@@ -1,0 +1,501 @@
+/* 优化后的游戏界面样式 - 明亮现代风格 */
+
+:root {
+    /* 明亮现代的配色方案 */
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --secondary-gradient: linear-gradient(to right, #4facfe 0%, #00f2fe 100%);
+    --surface-color: rgba(255, 255, 255, 0.15);
+    --text-primary: #ffffff;
+    --text-secondary: #f0f0f0;
+    --accent-color: #00f2fe;
+    --accent-hover: #4facfe;
+    
+    /* 游戏背景色 */
+    --game-bg-primary: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    --game-bg-secondary: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    --game-bg-accent: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    
+    /* 按钮颜色 */
+    --btn-primary: rgba(79, 172, 254, 0.8);
+    --btn-primary-hover: rgba(79, 172, 254, 1);
+    --btn-secondary: rgba(0, 242, 254, 0.8);
+    --btn-secondary-hover: rgba(0, 242, 254, 1);
+    --btn-danger: rgba(231, 76, 60, 0.8);
+    --btn-danger-hover: rgba(231, 76, 60, 1);
+    
+    /* 动画 */
+    --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.0, 0.0, 0.2, 1);
+    --ease-in: cubic-bezier(0.4, 0.0, 1, 1);
+    --anim-duration-short: 0.2s;
+    --anim-duration-medium: 0.3s;
+    --anim-duration-long: 0.5s;
+    
+    /* 布局 */
+    --safe-area-padding: max(20px, env(safe-area-inset-bottom));
+    --border-radius-lg: 20px;
+    --border-radius-md: 12px;
+    --border-radius-sm: 8px;
+}
+
+/* 深色模式支持 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --text-primary: #ffffff;
+        --text-secondary: #e0e0e0;
+        --surface-color: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* 游戏容器 */
+.canvas-wrapper {
+    position: relative;
+    width: 90vw; 
+    height: 90vh;
+    width: min(90vw, 90vh * (1000 / 600));
+    height: min(90vh, 90vw * (600 / 1000));
+    aspect-ratio: 1000 / 600;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 
+                0 0 0 1px rgba(255, 255, 255, 0.1),
+                inset 0 0 20px rgba(255, 255, 255, 0.05);
+    margin: 0 auto;
+    overflow: hidden;
+    background: var(--game-bg-primary);
+    transition: all var(--anim-duration-medium) var(--ease-standard);
+}
+
+.canvas-wrapper:hover {
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4), 
+                0 0 0 2px rgba(255, 255, 255, 0.2),
+                inset 0 0 30px rgba(255, 255, 255, 0.1);
+}
+
+/* 画布样式 */
+#viewport {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--border-radius-lg);
+    cursor: crosshair;
+}
+
+/* 页面背景 */
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-primary);
+    overflow: hidden;
+}
+
+/* 闪光过渡效果 */
+.flash-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, #ffffff, #f0f0f0);
+    z-index: 2000;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 1s var(--ease-out);
+    mix-blend-mode: overlay;
+}
+
+.flash-overlay.active {
+    opacity: 1;
+    transition: none;
+}
+
+/* 幻灯片覆盖层 - 明亮现代风格 */
+.slideshow-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(44, 62, 80, 0.98) 0%, rgba(52, 73, 94, 0.98) 100%);
+    z-index: 1000;
+    display: none;
+    opacity: 0;
+    transition: opacity var(--anim-duration-long) var(--ease-standard);
+    perspective: 1000px;
+    backdrop-filter: blur(10px);
+}
+
+.slideshow-overlay.active {
+    display: block;
+    opacity: 1;
+}
+
+/* 粒子画布层 */
+#particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    pointer-events: none;
+}
+
+/* 幻灯片容器 - 3D效果 */
+.slides-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+    z-index: 1001;
+    transform-style: preserve-3d;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity var(--anim-duration-long) var(--ease-standard), 
+                transform 8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    transform: scale(1.0) translateZ(0);
+    will-change: transform, opacity;
+}
+
+.slide.active {
+    opacity: 1;
+    transform: scale(1.02) translateZ(10px);
+}
+
+/* 颗粒覆盖效果 */
+.grain-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1002;
+    opacity: 0.08;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+}
+
+/* 电影级色彩分级 */
+.slideshow-overlay::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.4) 80%),
+                linear-gradient(to bottom, rgba(0, 0, 0, 0.1) 0%, transparent 30%, transparent 70%, rgba(0, 0, 0, 0.2) 100%);
+    pointer-events: none;
+    z-index: 1002;
+    mix-blend-mode: multiply;
+}
+
+/* 控制按钮 - 现代玻璃态效果 */
+.controls {
+    position: absolute;
+    bottom: var(--safe-area-padding);
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    z-index: 1003;
+}
+
+.control-btn {
+    background: var(--btn-primary);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: var(--text-primary);
+    padding: 1rem 2rem;
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    font-family: inherit;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    font-size: 1rem;
+    transition: all var(--anim-duration-short) var(--ease-standard);
+    backdrop-filter: blur(15px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2), 
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+    outline: none;
+    position: relative;
+    overflow: hidden;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* 按钮焦点效果 */
+.control-btn:focus-visible {
+    box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.6), 
+                0 4px 20px rgba(0, 0, 0, 0.2);
+    border-color: var(--accent-color);
+}
+
+/* 按钮悬停效果 */
+.control-btn:hover {
+    background: var(--btn-primary-hover);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3), 
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+}
+
+.control-btn:active {
+    transform: translateY(0) scale(0.98);
+    background: var(--btn-primary);
+}
+
+/* 关闭按钮 - 现代风格 */
+.close-btn {
+    position: absolute;
+    top: var(--safe-area-padding);
+    right: 20px;
+    z-index: 1003;
+    background: var(--btn-danger);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    transition: all var(--anim-duration-short) var(--ease-standard);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.close-btn:hover {
+    background: var(--btn-danger-hover);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 6px 20px rgba(231, 76, 60, 0.4);
+}
+
+/* 加载动画 - 现代风格 */
+.loader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--accent-color);
+    animation: spin 1s var(--ease-standard) infinite;
+    z-index: 999;
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.5);
+}
+
+@keyframes spin {
+    0% { transform: translate(-50%, -50%) rotate(0deg); }
+    100% { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* 交互提示文本样式 */
+.interaction-hint {
+    position: absolute;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 8px 16px;
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    pointer-events: none;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-5px); }
+}
+
+/* 返回博客按钮 */
+.back-to-blog-btn {
+    position: absolute;
+    top: var(--safe-area-padding);
+    left: 20px;
+    z-index: 1003;
+    background: rgba(52, 152, 219, 0.8);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 10px 20px;
+    border-radius: var(--border-radius-md);
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--anim-duration-short) var(--ease-standard);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.back-to-blog-btn:hover {
+    background: rgba(52, 152, 219, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+}
+
+.back-to-blog-btn:active {
+    transform: translateY(0);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .canvas-wrapper {
+        width: 95vw;
+        height: 95vh;
+        width: min(95vw, 95vh * (1000 / 600));
+        height: min(95vh, 95vw * (600 / 1000));
+    }
+    
+    .controls {
+        width: 90%;
+        justify-content: space-between;
+        gap: 10px;
+        bottom: 15px;
+    }
+    
+    .control-btn {
+        flex: 1;
+        text-align: center;
+        padding: 0.8rem 1rem;
+        font-size: 0.9rem;
+        min-width: 80px;
+    }
+    
+    .close-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        top: 15px;
+        right: 15px;
+    }
+    
+    .back-to-blog-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+        top: 15px;
+        left: 15px;
+    }
+    
+    .canvas-wrapper {
+        border-width: 2px;
+    }
+}
+
+@media (max-width: 480px) {
+    .controls {
+        flex-direction: row;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .control-btn {
+        padding: 0.7rem 0.8rem;
+        font-size: 0.8rem;
+        min-width: 70px;
+    }
+    
+    .close-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+    }
+    
+    .back-to-blog-btn {
+        padding: 6px 12px;
+        font-size: 11px;
+        top: 10px;
+        left: 10px;
+    }
+    
+    .loader {
+        width: 30px;
+        height: 30px;
+    }
+}
+
+/* 高对比度模式 */
+@media (prefers-contrast: high) {
+    :root {
+        --text-primary: #ffffff;
+        --text-secondary: #ffffff;
+        --surface-color: rgba(255, 255, 255, 0.3);
+    }
+    
+    .control-btn {
+        border-width: 2px;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    }
+    
+    .close-btn {
+        border-width: 2px;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    }
+    
+    .back-to-blog-btn {
+        border-width: 2px;
+        box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* 优化游戏内文本对比度 */
+.game-text-overlay {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 15px;
+    border-radius: var(--border-radius-sm);
+    font-size: 14px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* 游戏状态指示器 */
+.game-status {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 100;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 8px 12px;
+    border-radius: var(--border-radius-sm);
+    font-size: 12px;
+    font-weight: 500;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}

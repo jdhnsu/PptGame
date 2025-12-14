@@ -77,6 +77,16 @@ const keys = {
 // 移动速度（像素/帧）
 const moveSpeed = 5;
 
+// 交互相关常量
+const INTERACTION_DISTANCE = 150; // 1.5米交互距离（假设100px约为1米）
+const INTERACTION_COOLDOWN = 300; // 300ms冷却时间
+let lastInteractionTime = 0;
+let activeDoor = null; // 当前处于交互范围内的门
+
+// 逻辑游戏分辨率
+const GAME_WIDTH = 1000;
+const GAME_HEIGHT = 600;
+
 // 游戏循环相关变量
 let gameLoopId = null;
 let lastTime = 0;
@@ -220,16 +230,94 @@ function updatePlayerPosition() {
         }
         
         // 边界检测，确保玩家不会移出画布
-        const canvas = document.getElementById('viewport');
-        const dpr = window.devicePixelRatio || 1;
-        const cssWidth = canvas.width / dpr;
-        const cssHeight = canvas.height / dpr;
-        
+        // 使用逻辑分辨率进行边界检查
         if (player.x < 0) player.x = 0;
         if (player.y < 0) player.y = 0;
-        if (player.x + player.width > cssWidth) player.x = cssWidth - player.width;
-        if (player.y + player.height > cssHeight) player.y = cssHeight - player.height;
+        if (player.x + player.width > GAME_WIDTH) player.x = GAME_WIDTH - player.width;
+        if (player.y + player.height > GAME_HEIGHT) player.y = GAME_HEIGHT - player.height;
     });
+
+    // 检测交互范围
+    checkInteraction();
+}
+
+// 检查交互范围
+function checkInteraction() {
+    if (window.isSlideshowActive) return;
+
+    const player = players[0]; // 假设单人游戏
+    const playerCx = player.x + player.width / 2;
+    const playerCy = player.y + player.height / 2;
+    
+    let nearestDoor = null;
+    let minDistance = Infinity;
+
+    doors.forEach(door => {
+        const doorCx = door.x + door.width / 2;
+        const doorCy = door.y + door.height / 2;
+        
+        const dx = playerCx - doorCx;
+        const dy = playerCy - doorCy;
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        if (distance < INTERACTION_DISTANCE) {
+            if (distance < minDistance) {
+                minDistance = distance;
+                nearestDoor = door;
+            }
+        }
+    });
+
+    activeDoor = nearestDoor;
+}
+
+// 绘制交互提示
+function drawInteractionPrompt(ctx) {
+    if (activeDoor && !window.isSlideshowActive) {
+        const text = "按 F 开门";
+        const x = activeDoor.x + activeDoor.width / 2;
+        const y = activeDoor.y - 30; // 门上方显示
+        
+        // 简单的浮动动画
+        const floatOffset = Math.sin(Date.now() / 200) * 5;
+        const drawY = y + floatOffset;
+
+        ctx.font = "bold 16px 'Inter', sans-serif";
+        const textMetrics = ctx.measureText(text);
+        const textWidth = textMetrics.width;
+        const padding = 12;
+        const boxWidth = textWidth + padding * 2;
+        const boxHeight = 36;
+        const boxX = x - boxWidth / 2;
+        const boxY = drawY - boxHeight / 2 - 5; // Center vertically on text pos
+
+        // 绘制圆角背景框
+        ctx.save();
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
+        ctx.shadowBlur = 10;
+        ctx.shadowOffsetY = 4;
+        
+        // 绘制圆角矩形
+        ctx.beginPath();
+        ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 18);
+        ctx.fill();
+        ctx.restore();
+
+        // 绘制文字
+        ctx.fillStyle = "#2C3E50"; // 深色文字
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText(text, x, drawY - 5);
+        
+        // 绘制提示小三角
+        ctx.beginPath();
+        ctx.moveTo(x, boxY + boxHeight);
+        ctx.lineTo(x - 6, boxY + boxHeight + 6);
+        ctx.lineTo(x + 6, boxY + boxHeight + 6);
+        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.fill();
+    }
 }
 
 // 绘制游戏场景
@@ -238,7 +326,35 @@ function drawGame() {
     const ctx = canvas.getContext('2d');
     
     // 清除画布
+    // 注意：这里的 canvas.width 是物理像素，我们需要按比例缩放绘制
+    // 但 setBackground.js 已经设置了 transform: scale(dpr, dpr)
+    // 所以这里的坐标系是 CSS 像素。
+    // 我们需要进一步缩放到适应当前 Canvas 尺寸，使得 1000x600 填满画布。
+    
+    // 获取当前 CSS 宽高（逻辑像素）
+    const rect = canvas.getBoundingClientRect();
+    const cssW = rect.width;
+    const cssH = rect.height;
+    
+    // 计算缩放比例
+    const scaleX = cssW / GAME_WIDTH;
+    const scaleY = cssH / GAME_HEIGHT;
+    // 保持纵横比一致（虽然外部容器已经限制了比例，但为了保险取最小值或固定值）
+    // 由于容器强制了 1000/600，所以 scaleX 和 scaleY 应该非常接近
+    const scale = scaleX; 
+
+    // 清空（使用物理像素尺寸清空，或者重置 transform 后清空）
+    // 简单起见，我们保存状态，重置 transform 清空，再恢复并应用缩放
+    ctx.save();
+    ctx.setTransform(1, 0, 0, 1, 0, 0); // 重置为单位矩阵（物理像素）
     ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.restore();
+
+    ctx.save();
+    // 已经有 dpr 缩放在 setBackground.js 中设置了吗？
+    // setBackground.js 设置了 ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    // 所以我们是在 dpr 基础上再缩放
+    ctx.scale(scale, scale);
     
     // 绘制所有门
     doors.forEach(door => {
@@ -271,6 +387,11 @@ function drawGame() {
             }
         }
     });
+    
+    // 绘制交互提示
+    drawInteractionPrompt(ctx);
+
+    ctx.restore();
 }
 
 // 游戏主循环
@@ -304,8 +425,21 @@ function stopGameLoop() {
     }
 }
 
+// 触发门交互
+function triggerDoorInteraction(door) {
+    if (!door) return;
+
+    // Stop game loop and open slideshow
+    stopGameLoop();
+    if (window.openSlideshow) {
+        window.openSlideshow(door.id);
+    }
+}
+
 // 键盘按下事件处理
 function handleKeyDown(event) {
+    if (window.isSlideshowActive) return;
+
     if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(event.key)) {
             if (!keys[event.key]) {
                 keys[event.key] = true;
@@ -313,7 +447,16 @@ function handleKeyDown(event) {
             }
         } else if (event.key === 'f' || event.key === 'F') {
             keys.f = true;
-            startGameLoop();
+            
+            // 交互按键逻辑
+            const now = Date.now();
+            if (activeDoor && (now - lastInteractionTime > INTERACTION_COOLDOWN)) {
+                lastInteractionTime = now;
+                triggerDoorInteraction(activeDoor);
+            } else {
+                // 如果不在范围内或冷却中，仅触发按键状态（如果需要）或忽略
+                startGameLoop();
+            }
         }
         event.preventDefault();
     }
@@ -335,15 +478,18 @@ function initGame() {
     const canvas = document.getElementById('viewport');
     canvas.addEventListener('click', function(event) {
         const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
+        // 计算缩放比例
+        const scaleX = rect.width / GAME_WIDTH;
+        // 反向缩放点击坐标，映射回游戏逻辑坐标
+        const x = (event.clientX - rect.left) / scaleX;
+        const y = (event.clientY - rect.top) / scaleX;
         
         // 检查点击是否在任何一个门的区域内
         doors.forEach(door => {
             if (x >= door.x && x <= door.x + door.width && 
                 y >= door.y && y <= door.y + door.height) {
-                alert(`你点击了第${door.id}个门！`);
-                // 这里可以添加针对不同门的特定逻辑
+                // 直接复用触发函数
+                triggerDoorInteraction(door);
             }
         });
     });

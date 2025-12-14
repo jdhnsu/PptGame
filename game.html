@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>协作小组回顾小游戏</title>
+    <style>
+        @import "style.css";
+        /* 引入现代化游戏样式 */
+        @import "blog-style.css";
+        
+        /* 确保 Body 样式覆盖，使用 Flex 居中 */
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            /* 柔和的明亮渐变背景 */
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* 返回首页按钮样式 */
+        .home-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 3000;
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            padding: 10px 20px;
+            border-radius: 30px;
+            text-decoration: none;
+            color: #2c3e50;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            backdrop-filter: blur(10px);
+        }
+
+        .home-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            background: #fff;
+            color: #FF6B6B;
+        }
+
+        .home-icon {
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- 返回首页按钮 -->
+    <a href="index.html" class="home-btn">
+        <span class="home-icon">←</span> 返回首页
+    </a>
+
+    <div class="game-container" style="position: relative; width: 100%; height: 100%; background: transparent;">
+        <div class="canvas-wrapper">
+            <canvas id="viewport"></canvas>
+        </div>
+
+        <!-- Slideshow Overlay -->
+        <div id="flash-overlay" class="flash-overlay"></div>
+        <div id="slideshow-overlay" class="slideshow-overlay">
+            <!-- Canvas for Particle System Removed -->
+            <!-- <canvas id="particle-canvas"></canvas> -->
+            <div class="grain-overlay"></div>
+            <button id="close-btn" class="close-btn" aria-label="Close Slideshow">&times;</button>
+        <div id="slides-container" class="slides-container">
+            <!-- Slides will be injected here -->
+        </div>
+        <div id="loader" class="loader" style="display: none;"></div>
+        <div class="controls">
+            <button id="prev-btn" class="control-btn" aria-label="Previous Slide">Previous</button>
+            <button id="play-pause-btn" class="control-btn" aria-label="Play/Pause">Pause</button>
+            <button id="next-btn" class="control-btn" aria-label="Next Slide">Next</button>
+        </div>
+    </div>
+    
+    <!-- Audio Element (Optional) -->
+    <audio id="bg-music" loop>
+        <!-- Add source here if available, e.g., <source src="ambient.mp3" type="audio/mpeg"> -->
+    </audio>
+
+    <script src="setBackground.js"></script>
+    <script src="game.js"></script>
+    <script src="slideshow.js"></script>
+    <script>
+        // 控制首页按钮的显示/隐藏
+        const homeBtn = document.querySelector('.home-btn');
+        const slideshowOverlay = document.getElementById('slideshow-overlay');
+
+        // 监听幻灯片状态变化
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (slideshowOverlay.classList.contains('active')) {
+                        // 幻灯片显示时，隐藏首页按钮
+                        homeBtn.style.opacity = '0';
+                        homeBtn.style.pointerEvents = 'none';
+                    } else {
+                        // 幻灯片关闭时，显示首页按钮
+                        homeBtn.style.opacity = '1';
+                        homeBtn.style.pointerEvents = 'auto';
+                    }
+                }
+            });
+        });
+
+        // 配置观察选项
+        observer.observe(slideshowOverlay, {
+            attributes: true // 监听属性变化
+        });
+    </script>
+</body>
+</html>

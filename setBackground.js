@@ -36,9 +36,8 @@ function resizeCanvas() {
 window.addEventListener('resize', () => {
     // 防抖：避免连续触发太频繁
     clearTimeout(window._resizeTimer);
+    window._resizeTimer = setTimeout(resizeCanvas, 100);
 });
 
-/* 首次执行 */window.addEventListener('resize', () => {
-    // 防抖：避免连续触发太频繁
-});
+/* 首次执行 */
 resizeCanvas();

@@ -1,0 +1,642 @@
+/* 现代化明亮主题样式 */
+
+:root {
+    /* 科技几何风格配色方案 */
+    --primary-color: #3b82f6; /* 科技蓝 */
+    --secondary-color: #8b5cf6; /* 深紫调 */
+    --accent-color: #14b8a6; /* 青绿 */
+    --text-primary: #f8fafc; /* 亮白文字 */
+    --text-secondary: #94a3b8; /* 灰蓝辅助文字 */
+    --background-light: #f1f5f9; /* 下方内容区域保持浅色，形成对比 */
+    --background-white: #ffffff;
+    --background-dark: #0f172a; /* 深色背景 */
+    
+    /* 阴影和边框 */
+    --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+    --shadow-medium: 0 8px 25px rgba(0, 0, 0, 0.15);
+    --shadow-heavy: 0 15px 35px rgba(0, 0, 0, 0.2);
+    --border-radius: 12px;
+    --border-radius-large: 20px;
+    
+    /* 间距 */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    --spacing-xxl: 4rem;
+    
+    /* 字体 */
+    --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 2rem;
+    --font-size-4xl: 2.5rem;
+    
+    /* 动画 */
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--text-primary);
+    background-color: var(--background-light);
+    overflow-x: hidden;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+/* 导航栏适配深色背景 */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: rgba(15, 23, 42, 0.8); /* 深色半透明 */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 1000;
+    transition: all var(--transition-medium);
+}
+
+.navbar.scrolled {
+    background: rgba(15, 23, 42, 0.95);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 70px;
+}
+
+.nav-logo h1 {
+    font-size: var(--font-size-2xl);
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(to right, #3b82f6, #8b5cf6);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-menu {
+    display: flex;
+    list-style: none;
+    gap: var(--spacing-lg);
+}
+
+.nav-menu a {
+    text-decoration: none;
+    color: #cbd5e1; /* 浅灰 */
+    font-weight: 500;
+    transition: color var(--transition-fast);
+    position: relative;
+}
+
+.nav-menu a:hover {
+    color: white;
+}
+
+/* 按钮样式优化 - 科技感 */
+.play-button {
+    background: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.play-button:hover {
+    background: #2563eb;
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.6);
+}
+
+.play-icon {
+    color: white;
+}
+
+/* 英雄区文字颜色修正 */
+.hero-content {
+    color: white;
+}
+
+.hero-subtitle {
+    color: #94a3b8;
+    opacity: 1;
+}
+
+/* 下方白色内容区域的文字颜色需要重置为深色，否则看不见 */
+.team-section, .memories-section, .contact-section {
+    color: #334155; /* Slate 700 */
+}
+
+.section-title {
+    color: #1e293b; /* Slate 800 */
+}
+
+.team-member h3, .memory-card h3, .contact-label {
+    color: #1e293b;
+}
+
+.member-desc, .memory-card p, .contact-value, .contact-content p {
+    color: #64748b; /* Slate 500 */
+}
+
+.nav-menu a::after {
+    content: '';
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--primary-color);
+    transition: width var(--transition-fast);
+}
+
+.nav-menu a:hover::after {
+    width: 100%;
+}
+
+/* 主页英雄区域 */
+.hero-section {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background: #1e293b; /* Fallback for older browsers */
+    background: radial-gradient(circle at center, #0f172a 0%, #1e293b 100%); /* 几何深色背景 */
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: 
+        linear-gradient(to right, rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+    background-size: 40px 40px; /* 网格纹理 */
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* 几何装饰元素 - 使用伪元素或额外的 div 来实现（这里为了保持 HTML 结构不变，我们使用伪元素模拟部分效果，或者在 CSS 中添加装饰性背景图） */
+/* 由于 HTML 结构限制，我们用 background-image 叠加多个径向渐变来模拟光晕 */
+.hero-section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: 
+        radial-gradient(circle at 85% 10%, rgba(139, 92, 246, 0.15) 0%, transparent 20%), /* 紫色光晕 */
+        radial-gradient(circle at 10% 80%, rgba(59, 130, 246, 0.15) 0%, transparent 25%), /* 蓝色光晕 */
+        radial-gradient(circle at 25% 40%, rgba(20, 184, 166, 0.15) 0%, transparent 20%); /* 青色光晕 */
+    pointer-events: none;
+    z-index: 0;
+}
+
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--spacing-xxl) var(--spacing-md);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xxl);
+    align-items: center;
+    position: relative;
+    z-index: 1;
+}
+
+.hero-content {
+    color: white;
+}
+
+.hero-title {
+    font-size: var(--font-size-4xl);
+    font-weight: 700;
+    margin-bottom: var(--spacing-md);
+    line-height: 1.2;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 增加轻微阴影提升浅色背景下的可读性 */
+}
+
+.hero-subtitle {
+    font-size: var(--font-size-xl);
+    margin-bottom: var(--spacing-xl);
+    opacity: 0.9;
+    font-weight: 300;
+}
+
+.play-button {
+    background: var(--accent-color);
+    color: var(--text-primary);
+    border: none;
+    padding: var(--spacing-md) var(--spacing-xl);
+    border-radius: var(--border-radius-large);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: all var(--transition-medium);
+    box-shadow: var(--shadow-medium);
+    position: relative;
+    overflow: hidden;
+}
+
+.play-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left var(--transition-slow);
+}
+
+.play-button:hover::before {
+    left: 100%;
+}
+
+.play-button:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.play-button:active {
+    transform: translateY(-1px);
+}
+
+.play-icon {
+    font-size: var(--font-size-xl);
+    color: var(--primary-color);
+}
+
+.hero-image {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-placeholder {
+    width: 100%;
+    max-width: 500px;
+    aspect-ratio: 16/9;
+    border-radius: var(--border-radius-large);
+    overflow: hidden;
+    box-shadow: var(--shadow-heavy);
+    position: relative;
+}
+
+.image-placeholder img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* 团队介绍部分 */
+.team-section {
+    padding: var(--spacing-xxl) 0;
+    background: var(--background-white);
+}
+
+.section-title {
+    text-align: center;
+    font-size: var(--font-size-3xl);
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: var(--spacing-xl);
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
+    background: var(--primary-color);
+    border-radius: 2px;
+}
+
+.team-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xxl);
+}
+
+.team-member {
+    text-align: center;
+    padding: var(--spacing-xl);
+    background: var(--background-white);
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--shadow-light);
+    transition: all var(--transition-medium);
+    position: relative;
+    overflow: hidden;
+    color: #334155;
+}
+
+.team-member::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--background-gradient);
+    transform: scaleX(0);
+    transition: transform var(--transition-medium);
+}
+
+.team-member:hover::before {
+    transform: scaleX(1);
+}
+
+.team-member:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-medium);
+}
+
+.member-photo {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 0 auto var(--spacing-md);
+    border: 4px solid var(--accent-color);
+    box-shadow: var(--shadow-light);
+}
+
+.member-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.team-member h3 {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: var(--spacing-xs);
+}
+
+.member-role {
+    color: var(--primary-color);
+    font-weight: 500;
+    margin-bottom: var(--spacing-sm);
+}
+
+.member-desc {
+    color: #64748b;
+    line-height: 1.6;
+}
+
+/* 美好回忆部分 */
+.memories-section {
+    padding: var(--spacing-xxl) 0;
+    background: var(--background-light);
+    color: #334155;
+}
+
+.memories-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xxl);
+}
+
+.memory-card {
+    background: var(--background-white);
+    border-radius: var(--border-radius-large);
+    overflow: hidden;
+    box-shadow: var(--shadow-light);
+    transition: all var(--transition-medium);
+}
+
+.memory-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-heavy);
+}
+
+.memory-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+}
+
+.memory-card:hover img {
+    transform: scale(1.05);
+}
+
+.memory-card h3 {
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-xs);
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.memory-card p {
+    padding: 0 var(--spacing-md) var(--spacing-md);
+    color: #64748b;
+    line-height: 1.6;
+}
+
+/* 联系我们部分 */
+.contact-section {
+    padding: var(--spacing-xxl) 0;
+    background: var(--background-white);
+    color: #334155;
+}
+
+.contact-content {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.contact-content p {
+    font-size: var(--font-size-lg);
+    color: #64748b;
+    margin-bottom: var(--spacing-xl);
+}
+
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    align-items: center;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md) var(--spacing-lg);
+    background: var(--background-light);
+    border-radius: var(--border-radius);
+    min-width: 250px;
+}
+
+.contact-label {
+    font-weight: 600;
+    color: #1e293b;
+}
+
+.contact-value {
+    color: #64748b;
+}
+
+/* 页脚 */
+.footer {
+    background: var(--text-primary);
+    color: white;
+    text-align: center;
+    padding: var(--spacing-lg) 0;
+}
+
+.footer p {
+    opacity: 0.8;
+}
+
+/* 游戏模式下的页面样式 */
+body.game-mode {
+    overflow: hidden;
+    /* 游戏模式下，Body 需要 Flex 居中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+body.game-mode .navbar,
+body.game-mode .hero-section,
+body.game-mode .team-section,
+body.game-mode .memories-section,
+body.game-mode .contact-section,
+body.game-mode .footer {
+    display: none;
+}
+
+/* 游戏容器样式 */
+.game-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000; /* 或其他背景色，虽然 canvas-wrapper 会覆盖中间部分，但边缘可能可见 */
+    z-index: 2000;
+    overflow: hidden;
+    /* 确保容器内内容居中 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 优化现有游戏界面的样式 - 明亮现代风格 */
+.game-container .canvas-wrapper {
+    background: linear-gradient(120deg, #fdfbfb 0%, #ebedee 100%); /* 温暖明亮背景 */
+    border: 8px solid #ffffff;
+    border-radius: 24px;
+    box-shadow: 
+        0 20px 60px rgba(0, 0, 0, 0.1),
+        0 0 0 1px rgba(0, 0, 0, 0.05);
+    
+    /* 核心尺寸控制：保持 1000:600 比例，并适配屏幕 */
+    position: relative;
+    width: 90vw;
+    height: 90vh;
+    /* 使用 min 函数确保宽高都不超过屏幕限制，且保持比例 */
+    width: min(90vw, 90vh * (1000 / 600));
+    height: min(90vh, 90vw * (600 / 1000));
+    aspect-ratio: 1000 / 600;
+    
+    /* 确保溢出隐藏 */
+    overflow: hidden;
+}
+
+/* 确保 Canvas 填满 wrapper */
+#viewport {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+@import url('blog-style-responsive.css');
+
+.game-container .slideshow-overlay {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px);
+}
+
+.game-container .control-btn {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #1e293b; /* 优化：按钮文字深色 */
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.game-container .control-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(59, 130, 246, 0.3); /* 适配主色阴影 */
+    border-color: transparent;
+}
+
+.game-container .close-btn {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    color: #1e293b; /* 优化：关闭按钮文字深色 */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    font-size: 24px;
+}
+
+.game-container .close-btn:hover {
+    background: #ff4757;
+    color: white;
+    transform: rotate(90deg);
+    box-shadow: 0 8px 20px rgba(255, 71, 87, 0.3);
+}
+
+/* Particle Canvas Layer Removed */
+/* #particle-canvas {
+    opacity: 0.6;
+} */

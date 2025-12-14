@@ -1,16 +1,157 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>协作小组回顾小游戏</title>
-    <style>@import "style.css";</style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>团队回忆录 - 我们的美好时光</title>
+    <link rel="stylesheet" href="blog-style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="canvas-wrapper">
-        <canvas id="viewport"></canvas>
-    </div>
-    <script src="setBackground.js"></script>
-    <script src="game.js"></script>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-logo">
+                <h1>BigIdea</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#home">首页</a></li>
+                <li><a href="#team">团队介绍</a></li>
+                <li><a href="#memories">美好回忆</a></li>
+                <li><a href="#contact">联系我们</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- 主页部分 -->
+    <section id="home" class="hero-section">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h2 class="hero-title">一起回顾我们的美好时光</h2>
+                <p class="hero-subtitle">每一个瞬间都值得珍藏，每一个回忆都闪闪发光</p>
+                <a href="game.html" id="play-btn" class="play-button" style="text-decoration: none;">
+                    <span class="play-icon">▶</span>
+                    <span class="play-text">开始回忆之旅</span>
+                </a>
+            </div>
+            <div class="hero-image">
+                <div class="image-placeholder">
+                    <img src="./images/BG.jpeg" alt="团队合照">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 团队介绍部分 -->
+    <section id="team" class="team-section">
+        <div class="container">
+            <h2 class="section-title">认识我们的团队</h2>
+            <div class="team-grid">
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="./images/jdh.jpg" alt="团队成员1">
+                    </div>
+                    <h3>蒋东桓</h3>
+                    <p class="member-role">BigIdea 组长</p>
+                    <p class="member-desc">充满激情的团队领导者,PPT制作和代码编写</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="./images/lxy.jpg" alt="团队成员2">
+                    </div>
+                    <h3>罗星宇</h3>
+                    <p class="member-role">BigIdea 成员</p>
+                    <p class="member-desc">创意无限的成员，提供许多创意和灵感,擅长汇报板块</p>
+                </div>
+                <div class="team-member">
+                    <div class="member-photo">
+                        <img src="./images/hhw.jpg" alt="团队成员3">
+                    </div>
+                    <h3>黄虹韦</h3>
+                    <p class="member-role">BigIdea 成员</p>
+                    <p class="member-desc">美工设计,负责设计团队的形象和视觉元素</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 美好回忆部分 -->
+    <section id="memories" class="memories-section">
+        <div class="container">
+            <h2 class="section-title">美好回忆</h2>
+            <div class="memories-grid">
+                <div class="memory-card">
+                    <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=team%20celebration%20moment%2C%20happy%20people%20celebrating%2C%20bright%20and%20warm%20colors%2C%20modern%20photography%20style&image_size=landscape_4_3" alt="庆祝时刻">
+                    <h3>项目成功庆祝</h3>
+                    <p>我们一起努力，终于完成了这个重要的项目！</p>
+                </div>
+                <div class="memory-card">
+                    <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=team%20brainstorming%20session%2C%20people%20discussing%20ideas%2C%20bright%20office%20lighting%2C%20collaborative%20atmosphere&image_size=landscape_4_3" alt="头脑风暴">
+                    <h3>创意头脑风暴</h3>
+                    <p>每一次讨论都激发出新的火花和灵感。</p>
+                </div>
+                <!-- <div class="memory-card">
+                    <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=team%20outdoor%20activity%2C%20people%20having%20fun%20outdoors%2C%20natural%20lighting%2C%20happy%20and%20relaxed%20atmosphere&image_size=landscape_4_3" alt="团建活动">
+                    <h3>团建活动</h3>
+                    <p>工作之余，我们也一起享受生活的乐趣。</p>
+                </div>
+            </div> -->
+        </div>
+    </section>
+
+    <!-- 联系我们部分 -->
+    <section id="contact" class="contact-section">
+        <div class="container">
+            <h2 class="section-title">联系我们</h2>
+            <div class="contact-content">
+                <p>想要了解更多我们的故事？欢迎随时联系我们！</p>
+                <div class="contact-info">
+                    <div class="contact-item">
+                        <span class="contact-label">邮箱：</span>
+                        <span class="contact-value">jdh20060417@gmail.com</span>
+                    </div>
+                    <!-- <div class="contact-item">
+                        <span class="contact-label">电话：</span>
+                        <span class="contact-value">+86 123 4567 8900</span>
+                    </div> -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 团队回忆录. 所有权利保留.</p>
+        </div>
+    </footer>
+
+    <!-- 游戏界面（已移除，点击按钮跳转至 index.html） -->
+
+    <script>
+        // 平滑滚动导航
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 导航栏滚动效果
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled');
+            } else {
+                navbar.classList.remove('scrolled');
+            }
+        });
+    </script>
 </body>
 </html>
