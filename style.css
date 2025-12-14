@@ -1,0 +1,14 @@
+ /* 让容器随页面宽度变化，并保持 4:3 比例 */
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 1000px;          /* 你想给 canvas 的最大宽度 */
+            aspect-ratio: 1000 / 600;   /* 自动算高度 */
+            border: 2px solid #000;    /* 这里就是“可随布局改变的边框” */
+            margin: 0 auto;            /* 水平居中（可选） */
+        }
+        #viewport {
+            display: block;            /* 去掉底部空隙 */
+            width: 100%;
+            height: 100%;
+        }
