@@ -2,9 +2,9 @@
 /* Particle System Class Removed */
 
 const slideData = {
-    1: { count: 7, path: 'images/door-one/slide-', ext: '.PNG' },
-    2: { count: 9, path: 'images/door-two/slide-', ext: '.PNG' },
-    3: { count: 13, path: 'images/door-three/slide-', ext: '.PNG' }
+    1: { path: 'images/door-one/slide-', ext: '.PNG' },
+    2: { path: 'images/door-two/slide-', ext: '.PNG' },
+    3: { path: 'images/door-three/slide-', ext: '.PNG' }
 };
 
 let currentDoorId = null;
@@ -98,34 +98,33 @@ function closeSlideshow() {
 
 function loadSlides(doorId) {
     const data = slideData[doorId];
-    let loadedCount = 0;
-    const total = data.count;
-
-    // Create image elements for all slides
-    for (let i = 1; i <= total; i++) {
+    
+    // Clear existing
+    slides = [];
+    container.innerHTML = '';
+    
+    let index = 1;
+    
+    const loadNext = () => {
         const img = new Image();
         img.className = 'slide';
-        // Handle potential file naming differences if needed. 
-        // Assuming standard format from LS: slide-1.PNG, slide-2.PNG...
-        img.src = `${data.path}${i}${data.ext}`;
+        img.src = `${data.path}${index}${data.ext}`;
         
         img.onload = () => {
-            loadedCount++;
-            if (loadedCount === total) {
-                startSlideShow();
-            }
-        };
-        img.onerror = () => {
-            console.error(`Failed to load slide ${i}`);
-            img.dataset.error = "true"; // Mark for removal
-            img.style.display = "none";
-            loadedCount++; // Continue anyway
-            if (loadedCount === total) startSlideShow();
+            container.appendChild(img);
+            slides.push(img);
+            index++;
+            loadNext();
         };
         
-        container.appendChild(img);
-        slides.push(img);
-    }
+        img.onerror = () => {
+            // Assume end of sequence
+            // Start slideshow if we have finished loading available slides
+            startSlideShow();
+        };
+    };
+
+    loadNext();
 }
 
 function startSlideShow() {
