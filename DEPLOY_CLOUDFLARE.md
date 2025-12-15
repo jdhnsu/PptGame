@@ -1,12 +1,15 @@
-# 部署到 Cloudflare Pages 指南
+# 部署方式
+本项目是一个纯静态网站（HTML/CSS/JS），非常适合使用 **[Cloudflare Pages](#部署到-cloudflare-pages-指南)** 和 **[GitHub pages](#部署到-github-pages)** 进行免费、高速的全球部署。
 
-本项目是一个纯静态网站（HTML/CSS/JS），非常适合使用 **Cloudflare Pages** 进行免费、高速的全球部署。
+
+# **1**.部署到 Cloudflare Pages 指南
+
 
 ## 方法一：Git 集成（推荐 - 自动化部署）
 
 由于本项目已经是一个 Git 仓库，这是最简单的方法。
 
-1.  **推送到远程仓库**：
+1.  **Fork本项目 并 推送到远程仓库**：
     *   将你的代码推送到 GitHub 或 GitLab。
 2.  **创建 Cloudflare Pages 项目**：
     *   登录 [Cloudflare Dashboard](https://dash.cloudflare.com/)。
@@ -56,6 +59,13 @@
 
 ## 额外优化
 
-我已经为你创建了 `_headers` 文件。当部署到 Cloudflare Pages 时，它会自动生效：
+我已经创建了 `_headers` 文件。当部署到 Cloudflare Pages 时，它会自动生效：
 *   **缓存优化**：图片、CSS、JS 会被浏览器缓存 1 年，加快二次访问速度。
 *   **安全增强**：添加了基本的安全响应头。
+
+# **2**.部署到 Github Pages
+
+# Github Pages 指南
+
+这是一个纯静态网站（HTML/CSS/JS），非常适合使用 **Github Pages** 进行免费、高速的全球部署。
+首先把项目**fork**，然后打开 Github 仓库，进入 Settings -> Pages -> Source -> Deploy from a branch，选择一个合适的分支，并点击 Save，等待构建完成。
