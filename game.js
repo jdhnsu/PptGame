@@ -271,7 +271,7 @@ function checkInteraction() {
     activeDoor = nearestDoor;
 }
 
-// 绘制交互提示
+// 绘制交互提示 - 科技风格设计
 function drawInteractionPrompt(ctx) {
     if (activeDoor && !window.isSlideshowActive) {
         const text = "按 F 开门";
@@ -285,37 +285,47 @@ function drawInteractionPrompt(ctx) {
         ctx.font = "bold 16px 'Inter', sans-serif";
         const textMetrics = ctx.measureText(text);
         const textWidth = textMetrics.width;
-        const padding = 12;
+        const padding = 14;
         const boxWidth = textWidth + padding * 2;
-        const boxHeight = 36;
+        const boxHeight = 40;
         const boxX = x - boxWidth / 2;
         const boxY = drawY - boxHeight / 2 - 5; // Center vertically on text pos
 
-        // 绘制圆角背景框
+        // 绘制圆角背景框 - 科技蓝色渐变
         ctx.save();
-        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
-        ctx.shadowColor = "rgba(0, 0, 0, 0.1)";
-        ctx.shadowBlur = 10;
-        ctx.shadowOffsetY = 4;
+        // 使用渐变实现科技感
+        const gradientBox = ctx.createLinearGradient(boxX, boxY, boxX, boxY + boxHeight);
+        gradientBox.addColorStop(0, "rgba(59, 130, 246, 0.95)"); // 科技蓝
+        gradientBox.addColorStop(1, "rgba(99, 102, 241, 0.95)"); // 靛蓝
+        ctx.fillStyle = gradientBox;
+        
+        ctx.shadowColor = "rgba(59, 130, 246, 0.4)";
+        ctx.shadowBlur = 16;
+        ctx.shadowOffsetY = 6;
         
         // 绘制圆角矩形
         ctx.beginPath();
-        ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 18);
+        ctx.roundRect(boxX, boxY, boxWidth, boxHeight, 16);
         ctx.fill();
+        
+        // 绘制边框 - 科技感发光边框
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
         ctx.restore();
 
-        // 绘制文字
-        ctx.fillStyle = "#2C3E50"; // 深色文字
+        // 绘制文字 - 白色高对比
+        ctx.fillStyle = "#FFFFFF"; // 白色文字
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText(text, x, drawY - 5);
+        ctx.fillText(text, x, drawY - 2);
         
-        // 绘制提示小三角
+        // 绘制提示小三角 - 科技蓝色
         ctx.beginPath();
         ctx.moveTo(x, boxY + boxHeight);
         ctx.lineTo(x - 6, boxY + boxHeight + 6);
         ctx.lineTo(x + 6, boxY + boxHeight + 6);
-        ctx.fillStyle = "rgba(255, 255, 255, 0.9)";
+        ctx.fillStyle = "rgba(59, 130, 246, 0.95)";
         ctx.fill();
     }
 }
