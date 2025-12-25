@@ -12,11 +12,29 @@ let currentSlideIndex = 0;
 let isPlaying = true;
 let slideInterval;
 let slides = []; // Array of image elements
+let touchStartX = 0; // 触摸起点
+let touchEndX = 0;   // 触摸终点
 
 const overlay = document.getElementById('slideshow-overlay');
 const container = document.getElementById('slides-container');
 const loader = document.getElementById('loader');
 const playBtn = document.getElementById('play-pause-btn');
+
+// 创建幻灯片指示器
+let slideIndicator = null;
+const createSlideIndicator = () => {
+    if (!slideIndicator) {
+        slideIndicator = document.createElement('div');
+        slideIndicator.className = 'slide-indicator';
+        slideIndicator.id = 'slide-indicator';
+        document.body.appendChild(slideIndicator);
+    }
+};
+
+const updateSlideIndicator = () => {
+    if (!slideIndicator) return;
+    slideIndicator.textContent = `${currentSlideIndex + 1} / ${slides.length}`;
+};
 
 // Initialize controls
 const closeBtn = document.getElementById('close-btn');
@@ -28,7 +46,36 @@ nextBtn.addEventListener('click', nextSlide);
 prevBtn.addEventListener('click', prevSlide);
 playBtn.addEventListener('click', togglePlay);
 
-// Add Keyboard Shortcuts
+// 添加触摸滑动支持
+let isSwiping = false;
+
+overlay.addEventListener('touchstart', (e) => {
+    isSwiping = true;
+    touchStartX = e.touches[0].clientX;
+}, false);
+
+overlay.addEventListener('touchend', (e) => {
+    touchEndX = e.changedTouches[0].clientX;
+    handleSwipe();
+    isSwiping = false;
+}, false);
+
+const handleSwipe = () => {
+    const swipeThreshold = 50; // 最小滑动距离
+    const diff = touchStartX - touchEndX;
+    
+    if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+            // 向左滑动 -> 下一张
+            nextSlide();
+        } else {
+            // 向右滑动 -> 上一张
+            prevSlide();
+        }
+    }
+};
+
+// 添加键盘快捷键
 document.addEventListener('keydown', (e) => {
     if (!window.isSlideshowActive) return;
 
@@ -54,7 +101,7 @@ function openSlideshow(doorId) {
     
     window.isSlideshowActive = true;
 
-    // Trigger Flash Effect
+    // 触发闪白过渡效果
     const flash = document.getElementById('flash-overlay');
     flash.classList.add('active');
     // Force reflow
@@ -66,14 +113,17 @@ function openSlideshow(doorId) {
     currentDoorId = doorId;
     currentSlideIndex = 0;
     slides = [];
-    container.innerHTML = ''; // Clear previous slides
+    container.innerHTML = ''; // 清空之前的幻灯片
     overlay.classList.add('active');
     loader.style.display = 'block';
     
-    // Start Particles
-    // particleSystem.init();
+    // 创建幻灯片指示器
+    createSlideIndicator();
+    
+    // 显示加载动画
+    loader.classList.add('loading');
 
-    // Optional: Play audio
+    // 可选：播放背景音乐
     const audio = document.getElementById('bg-music');
     if (audio) {
         audio.currentTime = 0;
@@ -128,7 +178,7 @@ function loadSlides(doorId) {
 }
 
 function startSlideShow() {
-    // Filter out failed slides
+    // 过滤出失败的幻灯片
     slides = slides.filter(slide => {
         if (slide.dataset.error === "true") {
             if (slide.parentNode) slide.parentNode.removeChild(slide);
@@ -138,14 +188,18 @@ function startSlideShow() {
     });
 
     if (slides.length === 0) {
-        alert("No slides found for this door.");
+        alert("未找到该门的照片。");
         closeSlideshow();
         return;
     }
 
+    // 隐藏加载动画
     loader.style.display = 'none';
+    loader.classList.remove('loading');
+    
     isPlaying = true;
     updatePlayButton();
+    updateSlideIndicator();
     showSlide(0);
     startInterval();
 }
@@ -172,41 +226,52 @@ function togglePlay() {
 }
 
 function updatePlayButton() {
-    playBtn.textContent = isPlaying ? 'Pause' : 'Play';
+    playBtn.textContent = isPlaying ? '暂停' : '播放';
+    // 添加视觉反馈
+    playBtn.style.background = isPlaying ? 'rgba(59, 130, 246, 0.8)' : 'rgba(100, 116, 139, 0.8)';
 }
 
 function showSlide(index) {
-    // Wrap around
+    // 循环显示
     if (index >= slides.length) index = 0;
     if (index < 0) index = slides.length - 1;
 
     currentSlideIndex = index;
 
-    // Remove active class from all
+    // 从所有幻灯片中移除 active 类
     slides.forEach((slide, i) => {
         slide.classList.remove('active');
-        // Reset transform for inactive slides to prevent stacking context issues or performance drain
+        // 重置转换，防止叠层上下文问题
         slide.style.transform = 'scale(1.0) translateZ(0)';
     });
     
-    // Add active class to current
+    // 为当前幻灯片添加 active 类
     if (slides[currentSlideIndex]) {
         const slide = slides[currentSlideIndex];
         slide.classList.add('active');
-        // Let CSS handle the active state transform (scale 1.05 + translateZ)
+        // CSS 处理 active 状态的转换效果
         slide.style.transform = ''; 
     }
+    
+    // 更新指示器
+    updateSlideIndicator();
 }
 
 function nextSlide() {
     showSlide(currentSlideIndex + 1);
-    // Reset interval to avoid immediate skip if manually clicked
-    if (isPlaying) startInterval(); 
+    // 重置计时器避免手动点击时立即跳过
+    if (isPlaying) {
+        playBtn.textContent = '暂停'; // 更新按钮状态
+        startInterval();
+    }
 }
 
 function prevSlide() {
     showSlide(currentSlideIndex - 1);
-    if (isPlaying) startInterval();
+    if (isPlaying) {
+        playBtn.textContent = '暂停'; // 更新按钮状态
+        startInterval();
+    }
 }
 
 // Expose openSlideshow globally so game.js can call it
