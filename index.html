@@ -25,8 +25,14 @@
 
     <!-- 主页部分 -->
     <section id="home" class="hero-section">
+        <div class="hero-orbs" aria-hidden="true">
+            <span class="hero-orb hero-orb--one"></span>
+            <span class="hero-orb hero-orb--two"></span>
+            <span class="hero-orb hero-orb--three"></span>
+        </div>
         <div class="hero-container">
             <div class="hero-content">
+
                 <h2 class="hero-title">一起回顾我们的美好时光</h2>
                 <p class="hero-subtitle">每一个瞬间都值得珍藏，每一个回忆都闪闪发光</p>
                 <a href="game.html" id="play-btn" class="play-button" style="text-decoration: none;">
@@ -47,26 +53,29 @@
         <div class="container">
             <h2 class="section-title">认识我们的团队</h2>
             <div class="team-grid">
-                <div class="team-member">
+                <div class="team-member reveal-on-scroll">
                     <div class="member-photo">
                         <img src="./images/jdh.jpg" alt="团队成员1">
                     </div>
+
                     <h3>蒋东桓</h3>
                     <p class="member-role">BigIdea 组长</p>
                     <p class="member-desc">充满激情的团队领导者,PPT制作和代码编写</p>
                 </div>
-                <div class="team-member">
+                <div class="team-member reveal-on-scroll">
                     <div class="member-photo">
                         <img src="./images/lxy.jpg" alt="团队成员2">
                     </div>
+
                     <h3>罗星宇</h3>
                     <p class="member-role">BigIdea 成员</p>
                     <p class="member-desc">创意无限的成员，提供许多创意和灵感,擅长汇报板块</p>
                 </div>
-                <div class="team-member">
+                <div class="team-member reveal-on-scroll">
                     <div class="member-photo">
                         <img src="./images/hhw.jpg" alt="团队成员3">
                     </div>
+
                     <h3>黄虹韦</h3>
                     <p class="member-role">BigIdea 成员</p>
                     <p class="member-desc">美工设计,负责设计团队的形象和视觉元素</p>
@@ -79,17 +88,18 @@
     <section id="memories" class="memories-section">
         <div class="container">
             <h2 class="section-title">美好回忆</h2>
-            <div class="memories-grid">
-                <div class="memory-card">
-                    <img src="./images/gitcode.png" alt="庆祝时刻">
-                    <h3>项目成功庆祝</h3>
-                    <p>我们一起努力，终于完成了这个重要的项目！</p>
-                </div>
-                <div class="memory-card">
-                    <img src="./images/GroupPhoto.jpg" alt="头脑风暴">
-                    <h3>创意头脑风暴</h3>
-                    <p>每一次讨论都激发出新的火花和灵感。</p>
-                </div>
+                <div class="memories-grid">
+                    <div class="memory-card reveal-on-scroll">
+                        <img src="./images/gitcode.png" alt="庆祝时刻">
+                        <h3>项目成功庆祝</h3>
+                        <p>我们一起努力，终于完成了这个重要的项目！</p>
+                    </div>
+                    <div class="memory-card reveal-on-scroll">
+                        <img src="./images/GroupPhoto.jpg" alt="头脑风暴">
+                        <h3>创意头脑风暴</h3>
+                        <p>每一次讨论都激发出新的火花和灵感。</p>
+                    </div>
+
                 <!-- <div class="memory-card">
                     <img src="https://trae-api-sg.mchost.guru/api/ide/v1/text_to_image?prompt=team%20outdoor%20activity%2C%20people%20having%20fun%20outdoors%2C%20natural%20lighting%2C%20happy%20and%20relaxed%20atmosphere&image_size=landscape_4_3" alt="团建活动">
                     <h3>团建活动</h3>
@@ -152,6 +162,29 @@
                 navbar.classList.remove('scrolled');
             }
         });
+
+        // 卡片滚动渐显效果
+        const revealItems = document.querySelectorAll('.reveal-on-scroll');
+        if ('IntersectionObserver' in window) {
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('in-view');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, {
+                threshold: 0.2,
+                rootMargin: '0px 0px -5% 0px'
+            });
+
+            revealItems.forEach((el, index) => {
+                el.style.setProperty('--reveal-delay', `${index * 80}ms`);
+                revealObserver.observe(el);
+            });
+        } else {
+            revealItems.forEach(el => el.classList.add('in-view'));
+        }
     </script>
 </body>
 </html>
